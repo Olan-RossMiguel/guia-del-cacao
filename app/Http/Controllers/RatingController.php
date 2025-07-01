@@ -28,7 +28,20 @@ class RatingController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'comment' => 'required|string|max:500',
+            'rating' => 'required|integer|between:1,5',
+            'shop_id' => 'required|exists:choco_shops,id'
+        ]);
+
+        Rating::create([
+            'id_user' => Auth::id(),
+            'id_choco_shop' => $validated['shop_id'],
+            'comment' => $validated['comment'],
+            'is_approved' => true // Puedes cambiar esto para moderación
+        ]);
+
+        return back()->with('success', '¡Reseña publicada!');
     }
 
     /**

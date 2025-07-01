@@ -1,4 +1,12 @@
+import CommentBox from '@/Components/UI/CommentBox';
+import VirtualTour from '@/Components/VirtualTour';
+
+
 export default function Show({ shop }) {
+    console.log('Datos recibidos en Show:', {
+        shop,
+        hasVirtualTour: shop.virtualTour ? true : false,
+    });
     return (
         <div className="p-6">
             <h1 className="mb-4 text-3xl font-bold">{shop.name}</h1>
@@ -12,37 +20,39 @@ export default function Show({ shop }) {
                 />
             )}
 
-            {/* Descripción completa */}
+            {/* Descripción y ubicación */}
             <p className="mb-2 text-lg text-gray-800">{shop.description}</p>
+            <p className="mb-6 text-sm text-gray-500">📍 {shop.location}</p>
 
-            {/* Ubicación */}
-            <p className="mb-4 text-sm text-gray-500">
-                Ubicación: {shop.location}
-            </p>
+            {/* Recorrido Virtual usando el componente */}
+            {shop.plan === 'master' && shop.virtual_tour && (
+                <VirtualTour virtualTourData={shop.virtual_tour} />
+            )}
 
-            {/* Recorrido Virtual */}
-            <iframe
-                src={shop.virtual_tour}
-                className="h-96 w-full rounded-xl"
-                allowFullScreen
-            ></iframe>
+            {/* Reseñas */}
+            <div className="mt-8">
+                <h2 className="mb-3 text-xl font-semibold">Reseñas</h2>
 
-            {/* Reseñas (simplificadas) */}
-            <div className="mt-6">
-                <h2 className="mb-2 text-xl font-semibold">Reseñas</h2>
+                {/* Caja de comentarios */}
+                <CommentBox shopId={shop.id} />
+
+                {/* Listado de reseñas existentes */}
                 {shop.ratings?.length > 0 ? (
-                    shop.ratings.map((rating) => (
-                        <div key={rating.id} className="mb-4 border-b pb-2">
-                            <p className="text-sm font-medium">
-                                {rating.user.name}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                {rating.comment}
-                            </p>
-                        </div>
-                    ))
+                    <div className="mt-4 space-y-4">
+                        {shop.ratings.map((rating) => (
+                            <div key={rating.id} className="border-b pb-4">
+                                <p className="font-medium">
+                                    {rating.user?.name}
+                                </p>
+                                <p className="mt-1 text-gray-600">
+                                    {rating.comment}
+                                </p>
+                                {/* Eliminamos la visualización de estrellas */}
+                            </div>
+                        ))}
+                    </div>
                 ) : (
-                    <p className="text-gray-500">Aún no hay reseñas.</p>
+                    <p className="mt-4 text-gray-500">Aún no hay reseñas.</p>
                 )}
             </div>
         </div>

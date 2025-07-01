@@ -13,11 +13,13 @@ class ChocoShopController extends Controller
      */
 
 
-     public function master()
+    // En ChocoShopController.php
+    public function master()
     {
-        $shops = ChocoShop::select('id', 'name', 'slug', 'logo', 'location', 'short_description', 'avg_rating', 'ratings_count')
-    ->where('plan', 'master')
-    ->get();
+        $shops = ChocoShop::with('virtualTour') // Carga la relación
+            ->select('id', 'name', 'slug', 'logo', 'location', 'short_description', 'avg_rating', 'ratings_count', 'plan')
+            ->where('plan', 'master')
+            ->get();
 
         return Inertia::render('ChocoShops/Master', [
             'shops' => $shops,
@@ -27,8 +29,8 @@ class ChocoShopController extends Controller
     public function plus()
     {
         $shops = ChocoShop::select('id', 'name', 'slug', 'logo', 'location', 'short_description', 'avg_rating', 'ratings_count')
-    ->where('plan', 'plus')
-    ->get();
+            ->where('plan', 'plus')
+            ->get();
 
         return Inertia::render('ChocoShops/Plus', [
             'shops' => $shops,
@@ -38,8 +40,8 @@ class ChocoShopController extends Controller
     public function basic()
     {
         $shops = ChocoShop::select('id', 'name', 'slug', 'logo', 'location', 'short_description', 'avg_rating', 'ratings_count')
-    ->where('plan', 'basic')
-    ->get();
+            ->where('plan', 'basic')
+            ->get();
 
         return Inertia::render('ChocoShops/Basic', [
             'shops' => $shops,
@@ -47,7 +49,7 @@ class ChocoShopController extends Controller
     }
 
 
-    
+
     public function index()
     {
         //
@@ -73,16 +75,27 @@ class ChocoShopController extends Controller
      * Display the specified resource.
      */
     public function show($slug)
-{
-    $shop = ChocoShop::where('slug', $slug)->with([
-        'events', 'news', 'virtualTour', 'ratings.user'
-    ])->firstOrFail();
+    {
+        $shop = ChocoShop::with([
+            'virtualTour' => function ($query) {
+                $query->select('id_choco_shop', 'url', 'preview_image', 'embed_code'); // Mantenemos embed_code temporalmente
+            },
+            'ratings.user'
+        ])
+            ->select('id', 'name', 'logo', 'description', 'location', 'plan')
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-    return Inertia::render('ChocoShops/Show', [
-        'shop' => $shop,
-    ]);
-}
+        // Transformar embed_code a URL si es necesario (para compatibilidad)
+        if ($shop->virtualTour && !$shop->virtualTour->url && $shop->virtualTour->embed_code) {
+            preg_match('/src="([^"]*)"/', $shop->virtualTour->embed_code, $matches);
+            $shop->virtualTour->url = $matches[1] ?? null;
+        }
 
+        return Inertia::render('ChocoShops/Show', [
+            'shop' => $shop->makeHidden(['virtualTour.embed_code']), // Ocultamos el campo antiguo
+        ]);
+    }
     /**
      * Show the form for editing the specified resource.
      */

@@ -11,14 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('choco_shops', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-
-        });
-
-        Schema::table('choco_shops', function (Blueprint $table) {
-            $table->dropColumn('virtual_tour');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('profile_photo_path', 2048)->nullable()->after('email');
         });
     }
 
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('choco_shops');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

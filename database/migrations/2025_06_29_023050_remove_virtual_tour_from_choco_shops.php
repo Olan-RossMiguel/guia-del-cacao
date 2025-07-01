@@ -11,14 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('choco_shops', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-
-        });
-
         Schema::table('choco_shops', function (Blueprint $table) {
-            $table->dropColumn('virtual_tour');
+            //
         });
     }
 
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('choco_shops');
+        Schema::table('choco_shops', function (Blueprint $table) {
+            //
+        });
     }
 };
