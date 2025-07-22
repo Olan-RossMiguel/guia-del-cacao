@@ -6,23 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::table('choco_shops', function (Blueprint $table) {
-            //
-        });
+        // Verifica si la columna existe antes de intentar eliminarla
+        if (Schema::hasColumn('choco_shops', 'virtual_tour')) {
+            Schema::table('choco_shops', function (Blueprint $table) {
+                // Elimina la columna
+                $table->dropColumn('virtual_tour');
+                
+               
+                
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('choco_shops', function (Blueprint $table) {
-            //
+            // Para revertir, recrea la columna
+            $table->string('virtual_tour', 255)->nullable()->after('location');
         });
     }
 };

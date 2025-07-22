@@ -1,7 +1,7 @@
 export default function VirtualTour({ virtualTourData }) {
     if (!virtualTourData?.url) return null;
 
-    // Añade parámetros responsivos a la URL (si es tourmkr)
+    // Agregar parámetros si es un tourmkr
     const processedUrl = virtualTourData.url.includes('tourmkr.com')
         ? `${virtualTourData.url}${virtualTourData.url.includes('?') ? '&' : '?'}mobile=1&controls=1`
         : virtualTourData.url;
@@ -11,19 +11,18 @@ export default function VirtualTour({ virtualTourData }) {
             <h2 className="mb-3 text-xl font-semibold">
                 Recorrido Virtual 360°
             </h2>
-            <div
-                className="relative overflow-hidden rounded-xl bg-gray-100 shadow-lg"
-                style={{ height: '70vh', touchAction: 'none' }} // Crucial para móviles
-            >
+
+            <div className="relative aspect-[9/16] w-full overflow-hidden rounded-xl bg-black shadow-lg sm:aspect-[16/9]">
                 <iframe
                     src={processedUrl}
-                    className="h-full w-full select-none border-0"
+                    className="absolute left-0 top-0 h-full w-full border-0"
                     allow="fullscreen; xr-spatial-tracking; vr; accelerometer; gyroscope"
                     allowFullScreen
-                    // Atributos clave para móvil:
                     scrolling="no"
-                    sandbox="allow-scripts allow-same-origin allow-presentation"
+                    // Elimina sandbox por completo o prueba reducirlo si es necesario
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
                     importance="high"
+                    title="Virtual Tour"
                 />
             </div>
         </div>

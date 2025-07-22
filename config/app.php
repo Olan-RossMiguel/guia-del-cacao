@@ -1,7 +1,7 @@
 <?php
 
 return [
-
+    'auto_approve_ratings' => env('AUTO_APPROVE_RATINGS', true),
     /*
     |--------------------------------------------------------------------------
     | Application Name
